@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xuecheng.manage_course.dao.CourseCategoryMapper">
+    <!--构建三级数据模型数据结构，一层套一层的处理方式，应该还有更简单的方式处理-->
+<resultMap id="courseCategoryMap" type="com.xuecheng.framework.domain.course.ext.CategoryNode">
+    <id column="a_id" property="id"></id>
+<result column="a_name" property="name"></result>
+<result column="a_label" property="label"></result>
+<result column="a_parentId" property="parentid"></result>
+<result column="a_isshow" property="isshow"></result>
+<result column="a_orderby" property="orderby"></result>
+<result column="a_isleaf" property="isleaf"></result>
+<collection property="children" ofType="com.xuecheng.framework.domain.course.ext.CategoryNode">
+    <id column="b_id" property="id"></id>
+    <result column="b_name" property="name"></result>
+    <result column="b_label" property="label"></result>
+    <result column="b_parentId" property="parentid"></result>
+    <result column="b_isshow" property="isshow"></result>
+    <result column="b_orderby" property="orderby"></result>
+    <result column="b_isleaf" property="isleaf"></result>
+    <collection property="children" ofType="com.xuecheng.framework.domain.course.ext.CategoryNode">
+        <id column="c_id" property="id"></id>
+        <result column="c_name" property="name"></result>
+        <result column="c_label" property="label"></result>
+        <result column="c_parentId" property="parentid"></result>
+        <result column="c_isshow" property="isshow"></result>
+        <result column="c_orderby" property="orderby"></result>
+        <result column="c_isleaf" property="isleaf"></result>
+    </collection>
+</collection>
+</resultMap>
+<!--
+    此处不能指定resultType="com.xuecheng.framework.domain.course.ext.CategoryNode"
+    否则返回的是一个该上述指定类型的集合
+-->
+    <select id="categoryList" resultMap="courseCategoryMap" >
+     SELECT
+  a.id       AS a_id,
+  a.name     AS a_name,
+  a.label    AS a_label,
+  a.parentid AS a_parentId,
+  a.isshow   AS a_isshow,
+  a.orderby  AS a_orderby,
+  a.isleaf   AS a_isleaf,
+  b.id       AS b_id,
+  b.name     AS b_name,
+  b.parentid AS b_parentId,
+  b.isshow   AS b_isshow,
+  b.orderby  AS b_orderby,
+  b.isleaf   AS b_isleaf,
+  c.id       AS c_id,
+  c.name     AS c_name,
+  c.parentid AS c_parentId,
+  c.isshow   AS c_isshow,
+  c.orderby  AS c_orderby,
+  c.isleaf   AS c_isleaf
+FROM category a
+  LEFT JOIN category b
+    ON a.id = b.parentid
+  LEFT JOIN category c
+    ON b.id = c.parentid
+      where a.parentid = '0'
+ORDER BY a.id,b.id,c.id
+    </select>
+<!--上述的节点条件判定为什么会出现结果差异为什么如此之大
+此处where筛选出来后的记录是一个，是对后续的结果集进行筛选的，而不是链接条件的补充，切记，and是对于表与表之间进行连接的时候的条件补充
+论外连接下where和and的区别
+on and  是指这前后两个表连接的条件 不止一个条件，两个表会按所有条件进行前后连接，这on和and左右出现的是列与列的关系。他是A和B全部数据按要求的连接。
+on where 是指这前后两个表的连接条件只有on后面的一个，然后对连接好的结果，去执行where条件查询，where后面的列可以不是连接相关的列，
+where后面出现的是某一个列的条件，是对行的筛选条件，不是列与列的连接关系。where是对A或B筛选之后的数据再去按照ON的条件去连接
+比如select * from employee A  join Salary B on A.name=B.name and A.ID=B.ID
+select * from employee A  join Salary B on A.name=B.name  where A.ID='111'
+-->
+</mapper>
+
+

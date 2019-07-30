@@ -1,0 +1,16 @@
+server:
+port: 22100
+spring:
+application:
+name: xc‐service‐base‐filesystem
+#mongo配置
+data:
+mongodb:
+database: xc_fs
+uri: mongodb://127.0.0.1:27017
+#SpringMVC上传文件配置
+http:
+multipart:
+#默认支持文件上传.
+enabled: true
+#支持文件写入磁盘.

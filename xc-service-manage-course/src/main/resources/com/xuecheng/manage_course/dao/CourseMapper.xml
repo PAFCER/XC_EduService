@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xuecheng.manage_course.dao.CourseMapper">
+    <!--此处为测试Mybatis进行查询与SpringJPA进行对比的-->
+    <select id="findCourseList" resultType="com.xuecheng.framework.domain.course.CourseBase">
+     SELECT * FROM  course_base
+    </select>
+    <!--此处的条件查询
+    暂时并没有实现，目前只是提供了接口条件为后续扩展预留参数
+    -->
+    <select id="findCourseListByCondition" parameterType="com.xuecheng.framework.domain.course.request.CourseListRequest" resultType="com.xuecheng.framework.domain.course.ext.CourseInfo">
+    SELECT * FROM  course_base
+    </select>
+</mapper>
+

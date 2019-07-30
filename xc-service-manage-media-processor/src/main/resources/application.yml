@@ -1,0 +1,24 @@
+server:
+  port: 31450
+spring:
+  application:
+    name: xc-service-manage-media-processor
+
+  data:
+      mongodb:
+        uri:  mongodb://localhost:27017/xc_media
+   #消息队列访问基本配置
+  rabbitmq:
+       host: 127.0.0.1
+       port: 5672
+       username: guest
+       password: guest
+       virtualHost: /
+#消息队列及其路由
+xc-service-manage-media:
+    upload-location: E:/hotwater/StudySuccessOnline_Home/dealVideo/
+    mq:
+        queue-media-video-processor: queue_media_video_processor
+        routingkey-media-video: routingkey_media_video
+    ffmpeg_path: E:\hotwater\StudySuccessOnline_Home\ffmpeg-20180227-fa0c9d6-win64-static\bin\ffmpeg.exe
+

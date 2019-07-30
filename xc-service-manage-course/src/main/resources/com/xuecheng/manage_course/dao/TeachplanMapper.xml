@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xuecheng.manage_course.dao.TeachplanMapper">
+    <!--构建三级数据模型数据结构，一层套一层的处理方式，应该还有更简单的方式处理-->
+<resultMap id="teachplanMap" type="com.xuecheng.framework.domain.course.ext.TeachplanNode">
+    <id column="a_id" property="id"></id>
+    <result column="a_pname" property="pname"></result>
+    <result column="a_grade" property="grade"></result>
+    <result column="a_courseid" property="courseid"></result>
+    <result column="a_parentId" property="parentid"></result>
+    <result column="a_orderby" property="orderby"></result>
+    <result column="a_ptype" property="ptype"></result>
+    <result column="a_description" property="description"></result>
+    <result column="a_status" property="status"></result>
+    <result column="a_trylearn" property="trylearn"></result>
+    <result column="a_timelength" property="timelength"></result>
+<collection property="children" ofType="com.xuecheng.framework.domain.course.ext.TeachplanNode">
+    <id column="b_id" property="id"></id>
+    <result column="b_pname" property="pname"></result>
+    <result column="b_grade" property="grade"></result>
+    <result column="b_courseid" property="courseid"></result>
+    <result column="b_parentId" property="parentid"></result>
+    <result column="b_orderby" property="orderby"></result>
+    <result column="b_ptype" property="ptype"></result>
+    <result column="b_description" property="description"></result>
+    <result column="b_status" property="status"></result>
+    <result column="b_trylearn" property="trylearn"></result>
+    <result column="b_timelength" property="timelength"></result>
+    <collection property="children" ofType="com.xuecheng.framework.domain.course.ext.TeachplanNode">
+        <id column="c_id" property="id"></id>
+        <result column="c_pname" property="pname"></result>
+        <result column="c_grade" property="grade"></result>
+        <result column="c_courseid" property="courseid"></result>
+        <result column="c_parentId" property="parentid"></result>
+        <result column="c_orderby" property="orderby"></result>
+        <result column="c_ptype" property="ptype"></result>
+        <result column="c_description" property="description"></result>
+        <result column="c_status" property="status"></result>
+        <result column="c_trylearn" property="trylearn"></result>
+        <result column="c_timelength" property="timelength"></result>
+        <result column="mediaId" property="mediaId"></result>
+        <result column="mediaFileOriginalName" property="mediaFileOriginalName"></result>
+    </collection>
+</collection>
+</resultMap>
+<!--
+    此处不能指定resultType="com.xuecheng.framework.domain.course.ext.TeachplanNode"
+    否则返回的是一个该上述指定类型的集合
+-->
+    <select id="teachplanList" resultMap="teachplanMap" parameterType="java.lang.String" >
+    SELECT
+  a.id       AS a_id,
+  a.pname     AS a_pname,
+  a.grade    AS a_grade,
+  a.parentid AS a_parentId,
+  a.ptype   AS a_ptype,
+  a.orderby  AS a_orderby,
+  a.description   AS a_description,
+  a.status   AS a_status,
+  a.trylearn   AS a_trylearn,
+  a.courseid   AS a_courseid,
+  a.timelength   AS a_timelength,
+    b.id       AS b_id,
+  b.pname     AS b_pname,
+  b.grade    AS b_grade,
+  b.parentid AS b_parentId,
+  b.ptype   AS b_ptype,
+  b.orderby  AS b_orderby,
+  b.description   AS b_description,
+  b.status   AS b_status,
+  b.trylearn   AS b_trylearn,
+  b.courseid   AS b_courseid,
+  b.timelength   AS b_timelength,
+    c.id       AS c_id,
+  c.pname     AS c_pname,
+  c.grade    AS c_grade,
+  c.parentid AS c_parentId,
+  c.ptype   AS c_ptype,
+  c.orderby  AS c_orderby,
+  c.description   AS c_description,
+  c.status   AS c_status,
+  c.trylearn   AS c_trylearn,
+  c.courseid   AS c_courseid,
+  c.timelength   AS c_timelength,
+  media.media_id  AS  mediaId,
+  media.media_fileoriginalname AS mediaFileOriginalName
+FROM teachplan a
+  LEFT JOIN teachplan b
+    ON a.id = b.parentid
+  LEFT JOIN teachplan c
+    ON b.id = c.parentid
+    LEFT JOIN teachplan_media media
+    ON c.id = media.teachplan_id
+      WHERE a.parentid = '0'  AND  a.courseid=#{courseid}
+ORDER BY a.orderby,b.orderby,c.orderby
+    </select>
+<!--上述的节点条件判定为什么会出现结果差异为什么如此之大
+此处where筛选出来后的记录是一个，是对后续的结果集进行筛选的，而不是链接条件的补充，切记，and是对于表与表之间进行连接的时候的条件补充
+论外连接下where和and的区别
+on and  是指这前后两个表连接的条件 不止一个条件，两个表会按所有条件进行前后连接，这on和and左右出现的是列与列的关系。他是A和B全部数据按要求的连接。
+on where 是指这前后两个表的连接条件只有on后面的一个，然后对连接好的结果，去执行where条件查询，where后面的列可以不是连接相关的列，
+where后面出现的是某一个列的条件，是对行的筛选条件，不是列与列的连接关系。where是对A或B筛选之后的数据再去按照ON的条件去连接
+比如select * from employee A  join Salary B on A.name=B.name and A.ID=B.ID
+select * from employee A  join Salary B on A.name=B.name  where A.ID='111'
+-->
+</mapper>
+
+
